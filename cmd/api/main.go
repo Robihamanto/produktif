@@ -1,16 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"server"
-	"github.com/Pallinder/go-randomdata"
+	"github.com/Robihamanto/produktif/cmd/api/server"
+	//"github.com/Robihamanto/produktif/internal"
+	"github.com/jinzhu/gorm"
+
 )
 
 func main() {
-	fmt.Println("Hello Produktif")
-	fmt.Println(randomdata.SillyName())
-
-	server.Show()
 	e := server.New()
-	e.Start(":1818")
+	server.Start(e)
+}
+
+
+func addService(db *gorm.DB) {
+	
+}
+
+
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }

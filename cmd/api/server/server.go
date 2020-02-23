@@ -14,8 +14,14 @@ func New() *echo.Echo {
 	return e
 }
 
+// Start the echo server
+func Start(e *echo.Echo)  {
+	e.Start(":1818")
+}
+
 func healthCheck(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"status": "OK",
 	})
 }
+
