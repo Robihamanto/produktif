@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/Robihamanto/produktif/cmd/migration/schema"
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gitlab.com/comeapp/comeapp-backend/cmd/migration/schema"
 )
 
+var cfgFile string
 var sch *schema.Schema
 
 // rootCmd represents the base command when called without any subcommands
@@ -19,7 +20,7 @@ var rootCmd = &cobra.Command{
 	Long:  `Migrate DB Schema`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

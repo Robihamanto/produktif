@@ -135,3 +135,36 @@ func (s *Schema) Migrate() error {
 
 	return s.autoMigrate()
 }
+
+// ReverseLast reverse / undo last migration
+func (s *Schema) ReverseLast() error {
+	return s.migrator.RollbackLast()
+}
+
+// ReverseN reverse / undo N migration from current
+func (s *Schema) ReverseN(n int) error {
+	for ; n > 0; n-- {
+		if err := s.migrator.RollbackLast(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// ReverseAll reverse all migrations
+func (s *Schema) ReverseAll() error {
+	// list all migrations in DB
+	var dbMigs int
+	if err := s.db.
+		Model(&MyMigration{}).
+		Count(&dbMigs).
+		Error; err != nil {
+		return err
+	}
+	for i := dbMigs - 1; i >= 0; i-- {
+		if err := s.migrator.RollbackMigration(s.migrations[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
