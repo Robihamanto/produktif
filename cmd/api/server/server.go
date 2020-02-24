@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -15,7 +16,7 @@ func New() *echo.Echo {
 }
 
 // Start the echo server
-func Start(e *echo.Echo)  {
+func Start(e *echo.Echo) {
 	e.Start(":1818")
 }
 
@@ -24,4 +25,3 @@ func healthCheck(c echo.Context) error {
 		"status": "OK",
 	})
 }
-

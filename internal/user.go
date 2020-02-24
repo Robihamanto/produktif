@@ -32,5 +32,6 @@ func (u *User) VerifyPassword(password string) error {
 
 // UserDB represent userdatabase (repository)
 type UserDB interface {
+	View(uint) (*User, error)
 	Create(*User) (*User, error)
 }

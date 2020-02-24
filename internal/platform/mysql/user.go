@@ -1,19 +1,24 @@
 package mysql
 
 import (
+	model "github.com/Robihamanto/produktif/internal"
 	"github.com/jinzhu/gorm"
-	model "gitlab.com/comeapp/comeapp-backend/internal"
 )
 
 // UserDB represent client for the user table
-func UserDB struct {
+type UserDB struct {
 	cl *gorm.DB
+}
+
+// NewUserDB returning a new UserDB instance
+func NewUserDB(c *gorm.DB) *UserDB {
+	return &UserDB{c}
 }
 
 // View return single user by ID
 func (u *UserDB) View(id uint) (*model.User, error) {
 	var user model.User
-	if err := u.cl.Find(&user,id).Error; err == gorm.ErrRecordNotFound {
+	if err := u.cl.Find(&user, id).Error; err == gorm.ErrRecordNotFound {
 		return nil, err
 	} else if err != nil {
 		return nil, err
@@ -21,7 +26,15 @@ func (u *UserDB) View(id uint) (*model.User, error) {
 	return &user, nil
 }
 
-// View return single user by ID
+// Create update user on database
+func (u *UserDB) Create(user *model.User) (*model.User, error) {
+	if err := u.cl.Create(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// FindByEmail return single user by email
 func (u *UserDB) FindByEmail(email string) (*model.User, error) {
 	var user model.User
 	if err := u.cl.Where("email = ?", email).Find(&user).Error; err == gorm.ErrRecordNotFound {
@@ -32,6 +45,7 @@ func (u *UserDB) FindByEmail(email string) (*model.User, error) {
 	return &user, nil
 }
 
+// Delete return single user by user data
 func (u *UserDB) Delete(user *model.User) error {
 	if err := u.cl.Delete(user).Error; err != nil {
 		return err
