@@ -34,11 +34,14 @@ func (u *UserDB) Create(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-// FindByEmail return single user by email
-func (u *UserDB) FindByEmail(email string) (*model.User, error) {
+// ViewByEmail return single user by email
+func (u *UserDB) ViewByEmail(email string) (*model.User, error) {
 	var user model.User
-	if err := u.cl.Where("email = ?", email).Find(&user).Error; err == gorm.ErrRecordNotFound {
-		return nil, err
+	if err := u.cl.
+		Where("email = ?", email).
+		Find(&user).
+		Error; err == gorm.ErrRecordNotFound {
+		return nil, model.ErrUserNotFound
 	} else if err != nil {
 		return nil, err
 	}

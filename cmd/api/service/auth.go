@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Robihamanto/produktif/cmd/api/request"
@@ -33,7 +34,9 @@ func (a *Auth) register(c echo.Context) error {
 		req.Email,
 		req.Fullname,
 	)
+
 	if err != nil {
+		log.Print(err)
 		return err
 	}
 

@@ -22,3 +22,12 @@ func (s *Service) View(id uint) (*model.User, error) {
 	}
 	return user, nil
 }
+
+// ViewByEmail is return single user by id
+func (s *Service) ViewByEmail(email string) (*model.User, error) {
+	user, err := s.udb.ViewByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

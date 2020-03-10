@@ -28,7 +28,6 @@ func (u *userHTTPService) view(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	result, err := u.svc.View(uint(userID))
 	if err != nil {
 		return err

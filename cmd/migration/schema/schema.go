@@ -5,7 +5,7 @@ import (
 
 	model "github.com/Robihamanto/produktif/internal"
 	"github.com/jinzhu/gorm"
-	"gopkg.in/gormigrate.v1"
+	gormigrate "gopkg.in/gormigrate.v1"
 )
 
 // Schema struct represent schema for migration
@@ -24,7 +24,6 @@ func New(db *gorm.DB) *Schema {
 		IDColumnSize:   255,
 		UseTransaction: true,
 	}, migrations)
-
 	return &Schema{db, m, migrations}
 }
 
@@ -39,7 +38,7 @@ func initMigrations() []*gormigrate.Migration {
 						"`id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
 						"`created_at` timestamp NULL DEFAULT NULL," +
 						"`updated_at` timestamp NULL DEFAULT NULL," +
-						"`deleted_at` timestamp NULL DEFAULT NULL," +
+						"`dele ted_at` timestamp NULL DEFAULT NULL," +
 						"`username` varchar(255) NOT NULL," +
 						"`password` varchar(255) NOT NULL," +
 						"`email` varchar(255) NOT NULL," +
@@ -53,6 +52,21 @@ func initMigrations() []*gormigrate.Migration {
 				if err := tx.Exec(userTable).Error; err != nil {
 					return err
 				}
+
+				// Create dummy user
+				user := model.User{
+					Email:    "robihamanto@icloud.com",
+					Fullname: "Robihamanto",
+				}
+
+				if err := user.HashPassword("12344321"); err != nil {
+					return err
+				}
+
+				if err := tx.Create(&user).Error; err != nil {
+					return err
+				}
+
 				return nil
 			},
 			Rollback: func(tx *gorm.DB) error {
@@ -68,6 +82,11 @@ func initMigrations() []*gormigrate.Migration {
 // MyMigration represent a migration history points
 type MyMigration struct {
 	ID string `gorm:"column:id;size:255;not null;primary_key"`
+}
+
+// TableName defines customized table name for model MyMigration
+func (MyMigration) TableName() string {
+	return "migrations"
 }
 
 // func TableName() string {
