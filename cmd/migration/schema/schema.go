@@ -38,7 +38,7 @@ func initMigrations() []*gormigrate.Migration {
 						"`id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
 						"`created_at` timestamp NULL DEFAULT NULL," +
 						"`updated_at` timestamp NULL DEFAULT NULL," +
-						"`dele ted_at` timestamp NULL DEFAULT NULL," +
+						"`deleted_at` timestamp NULL DEFAULT NULL," +
 						"`username` varchar(255) NOT NULL," +
 						"`password` varchar(255) NOT NULL," +
 						"`email` varchar(255) NOT NULL," +
@@ -75,6 +75,66 @@ func initMigrations() []*gormigrate.Migration {
 				}
 				return nil
 			},
+		}, {
+			ID: "20200312103031",
+			Migrate: func(tx *gorm.DB) error {
+				var (
+					todolistTable = "CREATE TABLE `todolists` " +
+						"(" +
+						"		`id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+						"		`created_at` timestamp NULL DEFAULT NULL," +
+						"		`updated_at` timestamp NULL DEFAULT NULL," +
+						"		`deleted_at` timestamp NULL DEFAULT NULL," +
+						"    	`user_id` int(10) unsigned not null," +
+						"		`name` varchar(255) NOT NULL," +
+						"		`description` varchar(255) NOT NULL," +
+						"		PRIMARY KEY (`id`)," +
+						"		CONSTRAINT `todolist_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)" +
+						") ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+				)
+				if err := tx.Exec(todolistTable).Error; err != nil {
+					return err
+				}
+
+				return nil
+			},
+			Rollback: func(tx *gorm.DB) error {
+				if err := tx.DropTableIfExists(&model.Todolist{}).Error; err != nil {
+					return err
+				}
+				return nil
+			},
+		}, {
+			ID: "20200312114731",
+			Migrate: func(tx *gorm.DB) error {
+				var (
+					taskTable = "CREATE TABLE `tasks` " +
+						"(" +
+						"		`id` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+						"		`created_at` timestamp NULL DEFAULT NULL," +
+						"		`updated_at` timestamp NULL DEFAULT NULL," +
+						"		`deleted_at` timestamp NULL DEFAULT NULL," +
+						"    	`todolist_id` int(10) unsigned not null," +
+						"		`title` varchar(255) NOT NULL," +
+						"		`description` varchar(255) NOT NULL," +
+						"		`due_date` varchar(255) NOT NULL," +
+						"		`is_completed` varchar(255) NOT NULL," +
+						"		PRIMARY KEY (`id`)," +
+						"		CONSTRAINT `task_todolist_id_fk` FOREIGN KEY (`todolist_id`) REFERENCES `todolists`(`id`)" +
+						")		ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+				)
+				if err := tx.Exec(taskTable).Error; err != nil {
+					return err
+				}
+
+				return nil
+			},
+			Rollback: func(tx *gorm.DB) error {
+				if err := tx.DropTableIfExists(&model.Task{}).Error; err != nil {
+					return err
+				}
+				return nil
+			},
 		},
 	}
 }
@@ -88,10 +148,6 @@ type MyMigration struct {
 func (MyMigration) TableName() string {
 	return "migrations"
 }
-
-// func TableName() string {
-
-// }
 
 // AutoMigrate do an AutoMigration from exsisting models
 func (s *Schema) autoMigrate() error {
@@ -108,6 +164,8 @@ func (s *Schema) autoMigrate() error {
 
 	if err := tx.AutoMigrate(
 		&model.User{},
+		&model.Todolist{},
+		&model.Task{},
 	).Error; err != nil {
 		tx.Rollback()
 		return err

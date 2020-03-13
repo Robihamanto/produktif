@@ -5,6 +5,7 @@ import (
 	"github.com/Robihamanto/produktif/cmd/api/service"
 	"github.com/Robihamanto/produktif/internal/auth"
 	"github.com/Robihamanto/produktif/internal/platform/mysql"
+	"github.com/Robihamanto/produktif/internal/todolist"
 	"github.com/Robihamanto/produktif/internal/user"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -25,9 +26,16 @@ func main() {
 
 func addService(db *gorm.DB, e *echo.Echo) {
 	userDB := mysql.NewUserDB(db)
+	todolistDB := mysql.NewTodolistDB(db)
 
 	authSvc := auth.New(userDB)
+
 	userSvc := user.New(userDB)
+
+	todolistSvc := todolist.New(
+		todolistDB,
+		userDB,
+	)
 
 	//Bind app service to http service
 	service.NewAuth(authSvc, e)
@@ -37,6 +45,9 @@ func addService(db *gorm.DB, e *echo.Echo) {
 		userSvc,
 		userRouter,
 	)
+
+	todolistRouter := e.Group("/todolist")
+	//service.NewTodolist(todolistSvc, todolistRouter, )
 
 }
 
