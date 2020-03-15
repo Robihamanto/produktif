@@ -31,3 +31,12 @@ func (s *Service) ViewByEmail(email string) (*model.User, error) {
 	}
 	return user, nil
 }
+
+// ViewByUsername is return single user by id
+func (s *Service) ViewByUsername(username string) (*model.User, error) {
+	user, err := s.udb.ViewByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

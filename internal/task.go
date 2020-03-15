@@ -13,12 +13,12 @@ var (
 // Task represent todolist owe by user
 type Task struct {
 	Base
-	Todolist     Todolist  `json:"todolist,omitempty"`
-	TodolistID   uint      `json:"-" gorm:"not null"`
-	Title        string    `json:"title" gorm:"null"`
-	Desctription string    `json:"description" gorm:"not null; type:TEXT"`
-	DueDate      time.Time `json:"due_date" gorm:"not null;default:'1971-01-01 00:00:00'"`
-	IsCompleted  bool      `json:"is_completed"`
+	Todolist    Todolist  `json:"todolist,omitempty"`
+	TodolistID  uint      `json:"-" gorm:"not null"`
+	Title       string    `json:"title" gorm:"null"`
+	Description string    `json:"description" gorm:"not null; type:TEXT"`
+	DueDate     time.Time `json:"due_date" gorm:"not null;default:'1971-01-01 00:00:00'"`
+	IsCompleted bool      `json:"is_completed"`
 }
 
 // TaskDB represent all function to interact with Task database

@@ -1,11 +1,15 @@
 package request
 
-import "github.com/labstack/echo/v4"
+import (
+	"log"
+
+	"github.com/labstack/echo/v4"
+)
 
 // CreateTodolist holds information of todolist to be created
 type CreateTodolist struct {
 	Name        string `json:"name" validate:"required,max=255"`
-	Description string `json:"description" validate:"max=65535"`
+	Description string `json:"description" validate:"required,max=255"`
 }
 
 // ParseTodolist parses http request and save the information to
@@ -13,6 +17,7 @@ type CreateTodolist struct {
 func ParseTodolist(c echo.Context) (*CreateTodolist, error) {
 	p := new(CreateTodolist)
 	if err := c.Bind(p); err != nil {
+		log.Print("Error binding: ", err)
 		return nil, err
 	}
 	return p, nil
@@ -21,7 +26,7 @@ func ParseTodolist(c echo.Context) (*CreateTodolist, error) {
 // UpdateTodolist holds information of todolist to be created
 type UpdateTodolist struct {
 	Name        *string `json:"name" validate:"required,max=255"`
-	Description *string `json:"description" validate:"max=65535"`
+	Description *string `json:"description" validate:"required,max=65535"`
 }
 
 // ParseUpdateTodolist parse http request body and map it into struct

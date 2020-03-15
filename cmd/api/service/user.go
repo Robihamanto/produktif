@@ -8,29 +8,47 @@ import (
 	echo "github.com/labstack/echo/v4"
 )
 
-// userHTTPService represent user http service
-type userHTTPService struct {
-	svc *user.Service
+// User represent user http service
+type User struct {
+	service *user.Service
 }
 
 // NewUser create service for user
 func NewUser(
-	svc *user.Service,
-	ur *echo.Group,
+	service *user.Service,
+	userRouter *echo.Group,
+	jwtMw echo.MiddlewareFunc,
 ) {
-	uhs := userHTTPService{svc}
+	uhs := User{service}
 
-	ur.GET("/:id", uhs.view)
+	userRouter.GET("/:id", uhs.view, jwtMw)
+	userRouter.GET("/me", uhs.viewMe, jwtMw)
 }
 
-func (u *userHTTPService) view(c echo.Context) error {
+func (u *User) view(c echo.Context) error {
 	userID, err := request.ID(c)
 	if err != nil {
 		return err
 	}
-	result, err := u.svc.View(uint(userID))
+	result, err := u.service.View(uint(userID))
 	if err != nil {
 		return err
 	}
+	return c.JSON(http.StatusOK, result)
+}
+
+func (u *User) viewMe(c echo.Context) error {
+	userID, ok := c.Get("user_id").(int)
+	if !ok {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "Unable to fetch user",
+		})
+	}
+
+	result, err := u.service.View(uint(userID))
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, result)
 }

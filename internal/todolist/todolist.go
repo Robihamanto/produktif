@@ -55,12 +55,17 @@ func (s *Service) Create(param *Create) (*model.Todolist, error) {
 	}
 
 	todolist := &model.Todolist{
-		UserID:       param.UserID,
-		Name:         param.Name,
-		Desctription: param.Description,
+		UserID:      param.UserID,
+		Name:        param.Name,
+		Description: param.Description,
 	}
 
-	return todolist, err
+	result, err := s.todolistRepo.Create(todolist)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // Update struct hold data for update todolist
@@ -83,8 +88,22 @@ func (s *Service) Update(id, userID uint, param *Update) (*model.Todolist, error
 	}
 
 	if param.Description != nil {
-		todolist.Desctription = *param.Description
+		todolist.Description = *param.Description
 	}
 
-	return todolist, err
+	result, err := s.todolistRepo.Update(todolist)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
+}
+
+// Delete is return error message if fail doing deletion
+func (s *Service) Delete(id uint) error {
+	err := s.todolistRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -8,9 +8,9 @@ import (
 )
 
 // New connection to the database
-func New() (*gorm.DB, error) {
+func New(destination string) (*gorm.DB, error) {
 
-	db, err := gorm.Open("mysql", "root:root@(localhost:3306)/produktif_staging?charset=utf8mb4&parseTime=true")
+	db, err := gorm.Open("mysql", destination)
 	if err != nil {
 		return nil, err
 	}

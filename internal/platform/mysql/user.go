@@ -48,6 +48,20 @@ func (u *UserDB) ViewByEmail(email string) (*model.User, error) {
 	return &user, nil
 }
 
+// ViewByUsername return single user by username
+func (u *UserDB) ViewByUsername(username string) (*model.User, error) {
+	var user model.User
+	if err := u.cl.
+		Where("username = ?", username).
+		Find(&user).
+		Error; err == gorm.ErrRecordNotFound {
+		return nil, model.ErrUserNotFound
+	} else if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // Delete return single user by user data
 func (u *UserDB) Delete(user *model.User) error {
 	if err := u.cl.Delete(user).Error; err != nil {

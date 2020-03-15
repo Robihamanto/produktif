@@ -54,5 +54,6 @@ func (u *User) VerifyPassword(password string) error {
 type UserDB interface {
 	View(uint) (*User, error)
 	ViewByEmail(string) (*User, error)
+	ViewByUsername(string) (*User, error)
 	Create(*User) (*User, error)
 }

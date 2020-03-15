@@ -1,0 +1,14 @@
+db:
+  log: true
+  timeout: 5 # Query timeout in second
+  createschema: false
+  psn: "root:root@(localhost:3306)/produktif_staging?charset=utf8mb4&parseTime=true"
+
+jwt:
+  secret: "ashiyap"
+  duration: 8769 # in hours (1 year)
+  signingalgorithm: HS256
+
+casbin:
+  model: "auth_model.conf"
+  policy: "auth_policy.csv"

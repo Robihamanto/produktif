@@ -41,9 +41,8 @@ func (d *TodolistDB) List(id uint) ([]model.Todolist, error) {
 	return t, nil
 }
 
-// Create is create new todolist from user
+// Create new todolist from user
 func (d *TodolistDB) Create(todolist *model.Todolist) (*model.Todolist, error) {
-	var t model.Todolist
 	err := d.cl.
 		Create(todolist).
 		Error
@@ -52,19 +51,33 @@ func (d *TodolistDB) Create(todolist *model.Todolist) (*model.Todolist, error) {
 		return nil, err
 	}
 
-	return &t, nil
+	return todolist, nil
 }
 
-// Update is update todolist from user with new data
-func (d *TodolistDB) Update(todolist *model.Todolist) ([]model.Todolist, error) {
-	var t []model.Todolist
+// Update single todolist from user with new data
+func (d *TodolistDB) Update(todolist *model.Todolist) (*model.Todolist, error) {
 	err := d.cl.
-		Create(todolist).
+		Save(todolist).
 		Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return t, nil
+	return todolist, nil
+}
+
+// Delete is represent the deletion of single todolist
+func (d *TodolistDB) Delete(id uint) error {
+	var t []model.Todolist
+	err := d.cl.
+		Where("id = ?", id).
+		Delete(&t).
+		Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

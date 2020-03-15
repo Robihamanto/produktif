@@ -1,0 +1,8 @@
+p,  user_set, /users/me, GET
+p,  user_set, /users/:id, GET
+p,  user_set, /todolist/:id, GET
+p,  user_set, /todolist, GET
+p,  user_set, /todolist, POST
+p,  user_set, /todolist/:id, PUT
+p,  user_set, /todolist/:id, DELETE
+g,  user, user_set

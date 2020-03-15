@@ -9,7 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type todolistHTTPService struct {
+// Todolist represent todolist that hold all task made by user
+type Todolist struct {
 	svc *todolist.Service
 }
 
@@ -22,21 +23,25 @@ func NewTodolist(
 	tr *echo.Group,
 	jwtMw echo.MiddlewareFunc,
 ) {
-	ths := todolistHTTPService{svc}
+	ths := Todolist{svc}
 
 	tr.GET("", ths.list, jwtMw)
-	tr.POST("", ths.create)
-	tr.PUT("/:id", ths.create)
+	tr.GET("/:id", ths.view, jwtMw)
+	tr.POST("", ths.create, jwtMw)
+	tr.PUT("/:id", ths.update, jwtMw)
+	tr.DELETE("/:id", ths.delete, jwtMw)
 }
 
-func (s *todolistHTTPService) list(c echo.Context) error {
-	userID, err := request.ID(c)
-	if err != nil {
-		return err
+// GET /todolist
+func (s *Todolist) list(c echo.Context) error {
+
+	userID, ok := c.Get("user_id").(int)
+	if !ok {
+		return model.ErrCastingFailure
 	}
 
-	var result []model.Todolist
-	result, err = s.svc.List(uint(userID))
+	//var result []model.Todolist
+	result, err := s.svc.List(uint(userID))
 	if err != nil {
 		return err
 	}
@@ -44,7 +49,23 @@ func (s *todolistHTTPService) list(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func (s *todolistHTTPService) create(c echo.Context) error {
+// GET /todolist/:id
+func (s *Todolist) view(c echo.Context) error {
+	todolistID, err := request.ID(c)
+	if err != nil {
+		return err
+	}
+
+	result, err := s.svc.View(uint(todolistID))
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+// POST /todolist
+func (s *Todolist) create(c echo.Context) error {
 	req, err := request.ParseTodolist(c)
 	if err != nil {
 		return err
@@ -69,7 +90,8 @@ func (s *todolistHTTPService) create(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func (s *todolistHTTPService) update(c echo.Context) error {
+// PUT /todolist
+func (s *Todolist) update(c echo.Context) error {
 	todolistID, err := request.ID(c)
 	if err != nil {
 		return err
@@ -96,4 +118,21 @@ func (s *todolistHTTPService) update(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// DELETE /todolist/:id
+func (s *Todolist) delete(c echo.Context) error {
+	todolistID, err := request.ID(c)
+	if err != nil {
+		return err
+	}
+
+	err = s.svc.Delete(uint(todolistID))
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "delete todolist success",
+	})
 }
