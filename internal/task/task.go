@@ -1,6 +1,7 @@
 package task
 
 import (
+	"log"
 	"time"
 
 	model "github.com/Robihamanto/produktif/internal"
@@ -28,6 +29,7 @@ func (s *Service) View(id uint) (*model.Task, error) {
 	result, err := s.taskRepo.View(id)
 
 	if err != nil {
+		log.Print("Task service error: ", err)
 		return nil, err
 	}
 
@@ -122,6 +124,15 @@ func (s *Service) Update(id uint, param *Update) (*model.Task, error) {
 // Delete is return error message if fail doing deletion
 func (s *Service) Delete(id uint) error {
 	err := s.taskRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Unscope is return error message if fail doing deletion
+func (s *Service) Unscope(id uint) error {
+	err := s.taskRepo.Unscope(id)
 	if err != nil {
 		return err
 	}

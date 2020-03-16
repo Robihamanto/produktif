@@ -23,7 +23,6 @@ func (d *TaskDB) View(id uint) (*model.Task, error) {
 	} else if err != nil {
 		return nil, err
 	}
-
 	return &task, nil
 }
 
@@ -49,6 +48,16 @@ func (d TaskDB) Update(task *model.Task) (*model.Task, error) {
 func (d TaskDB) Delete(id uint) error {
 	var t model.Task
 	err := d.cl.Where("id = ?", id).Delete(&t).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Unscope a task from todolist
+func (d TaskDB) Unscope(id uint) error {
+	var t model.Task
+	err := d.cl.Unscoped().Where("id = ?", id).Delete(&t).Error
 	if err != nil {
 		return err
 	}

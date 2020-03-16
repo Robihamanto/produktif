@@ -10,19 +10,19 @@ import (
 // CreateTask holds information of todolist to be created
 type CreateTask struct {
 	TodolistID  uint      `json:"todolist_id" validate:"required"`
-	Title       string    `json:"name" validate:"required,max=255"`
+	Title       string    `json:"title" validate:"required,max=255"`
 	Description string    `json:"description" validate:"required,max=65535"`
-	DueDate     time.Time `json:"due_date"`
-	IsCompleted bool      `json:"is_completed"`
+	DueDate     time.Time `json:"due_date" validate:"default:'1971-01-01 00:00:00'"`
+	IsCompleted bool      `json:"is_completed" validate:"omitempty"`
 }
 
 // UpdateTask holds information of todolist to be created
 type UpdateTask struct {
 	TodolistID  *uint      `json:"todolist_id" validate:"required"`
-	Title       *string    `json:"name" validate:"required,max=255"`
+	Title       *string    `json:"title" validate:"required,max=255"`
 	Description *string    `json:"description" validate:"required,max=65535"`
-	DueDate     *time.Time `json:"due_date"`
-	IsCompleted *bool      `json:"is_completed"`
+	DueDate     *time.Time `json:"due_date" validate:"default:'1971-01-01 00:00:00'"`
+	IsCompleted *bool      `json:"is_completed" validate:"omitempty"`
 }
 
 // ParseTask parses http request and save the information to

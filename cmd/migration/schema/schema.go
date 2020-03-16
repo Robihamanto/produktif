@@ -52,21 +52,6 @@ func initMigrations() []*gormigrate.Migration {
 				if err := tx.Exec(userTable).Error; err != nil {
 					return err
 				}
-
-				// Create dummy user
-				user := model.User{
-					Email:    "robihamanto@icloud.com",
-					Fullname: "Robihamanto",
-				}
-
-				if err := user.HashPassword("12344321"); err != nil {
-					return err
-				}
-
-				if err := tx.Create(&user).Error; err != nil {
-					return err
-				}
-
 				return nil
 			},
 			Rollback: func(tx *gorm.DB) error {
@@ -117,8 +102,8 @@ func initMigrations() []*gormigrate.Migration {
 						"    	`todolist_id` int(10) unsigned not null," +
 						"		`title` varchar(255) NOT NULL," +
 						"		`description` varchar(255) NOT NULL," +
-						"		`due_date` varchar(255) NOT NULL," +
-						"		`is_completed` varchar(255) NOT NULL," +
+						"		`due_date` timestamp NOT NULL," +
+						"		`is_completed` tinyint(1) NOT NULL," +
 						"		PRIMARY KEY (`id`)," +
 						"		CONSTRAINT `task_todolist_id_fk` FOREIGN KEY (`todolist_id`) REFERENCES `todolists`(`id`)" +
 						")		ENGINE=InnoDB DEFAULT CHARSET=utf8;"
@@ -167,6 +152,28 @@ func (s *Schema) autoMigrate() error {
 		&model.Todolist{},
 		&model.Task{},
 	).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&model.Todolist{}).
+		AddForeignKey(
+			"user_id",
+			"user(id)",
+			"CASCADE",
+			"CASCADE").
+		Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&model.Task{}).
+		AddForeignKey(
+			"todolist_id",
+			"todolists(id)",
+			"CASCADE",
+			"CASCADE").
+		Error; err != nil {
 		tx.Rollback()
 		return err
 	}

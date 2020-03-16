@@ -15,7 +15,7 @@ type Todolist struct {
 	UserID      uint   `json:"-" gorm:"not null"`
 	Name        string `json:"name" gorm:"not null; size:255"`
 	Description string `json:"description" gorm:"null; type:TEXT"`
-	Tasks       []Task `json:"tasks"`
+	Tasks       []Task `json:"tasks" gorm:"PRELOAD:false"`
 }
 
 // TodolistDB represent all func to interact with todolist

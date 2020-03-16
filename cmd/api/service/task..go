@@ -26,6 +26,7 @@ func NewTask(
 	taskRouter.POST("", ths.create, jwtMw)
 	taskRouter.PUT("/:id", ths.update, jwtMw)
 	taskRouter.DELETE("/:id", ths.delete, jwtMw)
+	taskRouter.DELETE("/unscope/:id", ths.unscope, jwtMw)
 }
 
 // GET /task/todo/:id
@@ -122,6 +123,23 @@ func (s *Task) delete(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "delete todolist success",
+		"message": "delete task success",
+	})
+}
+
+// DELETE /task/unscope/:id
+func (s *Task) unscope(c echo.Context) error {
+	taskID, err := request.ID(c)
+	if err != nil {
+		return err
+	}
+
+	err = s.service.Unscope(uint(taskID))
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "delete task success",
 	})
 }
