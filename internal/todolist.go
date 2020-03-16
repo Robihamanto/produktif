@@ -22,7 +22,7 @@ type Todolist struct {
 type TodolistDB interface {
 	View(id uint) (*Todolist, error)
 	Create(*Todolist) (*Todolist, error)
-	List(id uint) ([]Todolist, error)
 	Update(*Todolist) (*Todolist, error)
 	Delete(id uint) error
+	List(id uint) ([]Todolist, error)
 }

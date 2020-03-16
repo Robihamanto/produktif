@@ -8,6 +8,7 @@ import (
 	"github.com/Robihamanto/produktif/cmd/api/service"
 	"github.com/Robihamanto/produktif/internal/auth"
 	"github.com/Robihamanto/produktif/internal/platform/mysql"
+	"github.com/Robihamanto/produktif/internal/task"
 	"github.com/Robihamanto/produktif/internal/todolist"
 	"github.com/Robihamanto/produktif/internal/user"
 	"github.com/casbin/casbin"
@@ -37,33 +38,45 @@ func addService(config *config.Configuration, db *gorm.DB, e *echo.Echo) {
 
 	userDB := mysql.NewUserDB(db)
 	todolistDB := mysql.NewTodolistDB(db)
+	taskDB := mysql.NewTaskDB(db)
 
 	jwtService := jwt.New(config.JWT, rbacService)
 	jwtMiddleware := jwtService.MWFunc()
 
-	authSvc := auth.New(userDB, jwtService)
+	authService := auth.New(userDB, jwtService)
+	userService := user.New(userDB)
 
-	userSvc := user.New(userDB)
-
-	todolistSvc := todolist.New(
+	todolistService := todolist.New(
 		todolistDB,
 		userDB,
 	)
 
+	taskService := task.New(
+		taskDB,
+		todolistDB,
+	)
+
 	//Bind app service to http service
-	service.NewAuth(authSvc, e)
+	service.NewAuth(authService, e)
 
 	userRouter := e.Group("/users")
 	service.NewUser(
-		userSvc,
+		userService,
 		userRouter,
 		jwtMiddleware,
 	)
 
 	todolistRouter := e.Group("/todolist")
 	service.NewTodolist(
-		todolistSvc,
+		todolistService,
 		todolistRouter,
+		jwtMiddleware,
+	)
+
+	taskRouter := e.Group("/task")
+	service.NewTask(
+		taskService,
+		taskRouter,
 		jwtMiddleware,
 	)
 
