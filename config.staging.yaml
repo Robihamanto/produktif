@@ -2,7 +2,7 @@ db:
   log: true
   timeout: 5 # Query timeout in second
   createschema: false
-  psn: "root:root@(db:3306)/produktif_staging?charset=utf8mb4&parseTime=true"
+  psn: "root:root@(localhost:3306)/produktif_staging?charset=utf8mb4&parseTime=true"
 
 jwt:
   secret: "ashiyap"

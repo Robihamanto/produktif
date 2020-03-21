@@ -120,6 +120,25 @@ func initMigrations() []*gormigrate.Migration {
 				}
 				return nil
 			},
+		}, {
+			ID: "20200321173111",
+			Migrate: func(tx *gorm.DB) error {
+				if err := tx.Exec(
+					"ALTER TABLE `tasks` ADD `priority` tinyint(1) NOT NULL",
+				).Error; err != nil {
+					return err
+				}
+
+				return nil
+			},
+			Rollback: func(tx *gorm.DB) error {
+				if err := tx.Exec(
+					"ALTER TABLE `tasks` DROP COLUMN `priority",
+				).Error; err != nil {
+					return err
+				}
+				return nil
+			},
 		},
 	}
 }

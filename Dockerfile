@@ -6,6 +6,8 @@ COPY . /app
 
 RUN go mod download
 
-# RUN go run cmd/migration/main.go up
+RUN chmod +x /app/run.sh
 
-ENTRYPOINT go run cmd/api/main.go
+ENV COME_RUN_MIGRATION=1
+
+ENTRYPOINT /app/run.sh
