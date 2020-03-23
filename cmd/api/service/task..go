@@ -24,6 +24,7 @@ func NewTask(
 	taskRouter.GET("/todo/:id", ths.list, jwtMw)
 	taskRouter.GET("/:id", ths.view, jwtMw)
 	taskRouter.POST("", ths.create, jwtMw)
+	taskRouter.POST("/bulk", ths.creates, jwtMw)
 	taskRouter.PUT("/:id", ths.update, jwtMw)
 	taskRouter.DELETE("/:id", ths.delete, jwtMw)
 	taskRouter.DELETE("/unscope/:id", ths.unscope, jwtMw)
@@ -75,6 +76,33 @@ func (s *Task) create(c echo.Context) error {
 	}
 
 	result, err := s.service.Create(param)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+// POST /tasks
+func (s *Task) creates(c echo.Context) error {
+	req, err := request.ParseTasks(c)
+	if err != nil {
+		return err
+	}
+	var tasks []*task.Create
+
+	for _, value := range *req {
+		task := &task.Create{
+			TodolistID:  value.TodolistID,
+			Title:       value.Title,
+			Description: value.Description,
+			DueDate:     value.DueDate,
+			IsCompleted: value.IsCompleted,
+		}
+		tasks = append(tasks, task)
+	}
+
+	result, err := s.service.Creates(tasks)
 	if err != nil {
 		return err
 	}

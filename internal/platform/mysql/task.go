@@ -35,6 +35,20 @@ func (d TaskDB) Create(task *model.Task) (*model.Task, error) {
 	return task, nil
 }
 
+// Creates bulk of new task for todolist
+func (d TaskDB) Creates(tasks []*model.Task) ([]*model.Task, error) {
+	// for _, task := range tasks {
+
+	// }
+
+	err := d.cl.Create(tasks).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
 // Update a task for todolist
 func (d TaskDB) Update(task *model.Task) (*model.Task, error) {
 	err := d.cl.Save(task).Error

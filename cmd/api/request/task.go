@@ -14,6 +14,7 @@ type CreateTask struct {
 	Description string    `json:"description" validate:"required,max=65535"`
 	DueDate     time.Time `json:"due_date" validate:"default:'1971-01-01 00:00:00'"`
 	IsCompleted bool      `json:"is_completed" validate:"omitempty"`
+	Priority    uint      `json:"priority" gorm:"not null"`
 }
 
 // UpdateTask holds information of todolist to be created
@@ -23,6 +24,7 @@ type UpdateTask struct {
 	Description *string    `json:"description" validate:"required,max=65535"`
 	DueDate     *time.Time `json:"due_date" validate:"default:'1971-01-01 00:00:00'"`
 	IsCompleted *bool      `json:"is_completed" validate:"omitempty"`
+	Priority    *uint      `json:"priority" gorm:"not null"`
 }
 
 // ParseTask parses http request and save the information to
@@ -31,6 +33,17 @@ func ParseTask(c echo.Context) (*CreateTask, error) {
 	p := new(CreateTask)
 	if err := c.Bind(p); err != nil {
 		log.Print("Error binding when create: ", err)
+		return nil, err
+	}
+	return p, nil
+}
+
+// ParseTasks parses http request and save the information to
+// Task Struct
+func ParseTasks(c echo.Context) (*[]CreateTask, error) {
+	p := new([]CreateTask)
+	if err := c.Bind(p); err != nil {
+		log.Print("Error binding tasks array when create: ", err)
 		return nil, err
 	}
 	return p, nil

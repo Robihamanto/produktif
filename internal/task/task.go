@@ -9,13 +9,13 @@ import (
 
 // Service represent task service
 type Service struct {
-	taskRepo     model.TaskDB
-	todolistRepo model.TodolistDB
+	taskRepository model.TaskRepository
+	todolistRepo   model.TodolistDB
 }
 
 // New creating new service for task
 func New(
-	taskRepo model.TaskDB,
+	taskRepo model.TaskRepository,
 	todolistRepo model.TodolistDB,
 ) *Service {
 	return &Service{
@@ -26,7 +26,7 @@ func New(
 
 // View retrieve single task from todolist
 func (s *Service) View(id uint) (*model.Task, error) {
-	result, err := s.taskRepo.View(id)
+	result, err := s.taskRepository.View(id)
 
 	if err != nil {
 		log.Print("Task service error: ", err)
@@ -38,7 +38,7 @@ func (s *Service) View(id uint) (*model.Task, error) {
 
 // List retrieve bunch of task from todolist
 func (s *Service) List(id uint) ([]model.Task, error) {
-	result, err := s.taskRepo.List(id)
+	result, err := s.taskRepository.List(id)
 
 	if err != nil {
 		return nil, err
@@ -71,7 +71,35 @@ func (s *Service) Create(param *Create) (*model.Task, error) {
 		IsCompleted: param.IsCompleted,
 	}
 
-	result, err := s.taskRepo.Create(task)
+	result, err := s.taskRepository.Create(task)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// Creates handle creation of task for todolist
+func (s *Service) Creates(param []*Create) ([]*model.Task, error) {
+	// Make sure todolist exist
+	if _, err := s.todolistRepo.View(param[0].TodolistID); err != nil {
+		return nil, err
+	}
+
+	var tasks []*model.Task
+
+	for _, value := range param {
+		task := &model.Task{
+			TodolistID:  value.TodolistID,
+			Title:       value.Title,
+			Description: value.Description,
+			DueDate:     value.DueDate,
+			IsCompleted: value.IsCompleted,
+		}
+		tasks = append(tasks, task)
+	}
+
+	result, err := s.taskRepository.Creates(tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +119,7 @@ type Update struct {
 // Update handle update information of task for todolist
 func (s *Service) Update(id uint, param *Update) (*model.Task, error) {
 	// get current task info
-	task, err := s.taskRepo.View(id)
+	task, err := s.taskRepository.View(id)
 
 	if err != nil {
 		return nil, err
@@ -113,7 +141,7 @@ func (s *Service) Update(id uint, param *Update) (*model.Task, error) {
 		task.IsCompleted = *param.IsCompleted
 	}
 
-	result, err := s.taskRepo.Update(task)
+	result, err := s.taskRepository.Update(task)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +151,7 @@ func (s *Service) Update(id uint, param *Update) (*model.Task, error) {
 
 // Delete is return error message if fail doing deletion
 func (s *Service) Delete(id uint) error {
-	err := s.taskRepo.Delete(id)
+	err := s.taskRepository.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -132,7 +160,7 @@ func (s *Service) Delete(id uint) error {
 
 // Unscope is return error message if fail doing deletion
 func (s *Service) Unscope(id uint) error {
-	err := s.taskRepo.Unscope(id)
+	err := s.taskRepository.Unscope(id)
 	if err != nil {
 		return err
 	}

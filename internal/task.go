@@ -19,12 +19,14 @@ type Task struct {
 	Description string    `json:"description" gorm:"not null; type:TEXT"`
 	DueDate     time.Time `json:"due_date" gorm:"not null;default:'1971-01-01 00:00:00'"`
 	IsCompleted bool      `json:"is_completed" gorm:"not null"`
+	Priority    uint      `json:"priority" gorm:"not null"`
 }
 
-// TaskDB represent all function to interact with Task database
-type TaskDB interface {
+// TaskRepository represent all function to interact with Task database
+type TaskRepository interface {
 	View(id uint) (*Task, error)
 	Create(*Task) (*Task, error)
+	Creates([]*Task) ([]*Task, error)
 	Update(*Task) (*Task, error)
 	Delete(id uint) error
 	Unscope(id uint) error

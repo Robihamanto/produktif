@@ -18,7 +18,9 @@ func NewTodolistDB(db *gorm.DB) *TodolistDB {
 // View retrieve single todolist by user id
 func (d *TodolistDB) View(id uint) (*model.Todolist, error) {
 	var t model.Todolist
-	if err := d.cl.Find(&t, id).Error; err == gorm.ErrRecordNotFound {
+	if err := d.cl.
+		Preload("Tasks").
+		Find(&t, id).Error; err == gorm.ErrRecordNotFound {
 		return nil, model.ErrTodolistNotFound
 	} else if err != nil {
 		return nil, err
@@ -67,6 +69,7 @@ func (d *TodolistDB) Delete(id uint) error {
 func (d *TodolistDB) List(id uint) ([]model.Todolist, error) {
 	var t []model.Todolist
 	err := d.cl.
+		Preload("Tasks").
 		Where("user_id = ?", id).
 		Find(&t).
 		Error
